@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Prioritization</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <!-- Optional: Link to CSS -->
+    <script>
+      async function prioritizeTasks() {
+        // Get input values
+        const participant = document.getElementById("participant").value;
+        const time = document.getElementById("time").value;
+
+        // Validate inputs
+        if (!time || time <= 0) {
+          alert("Please enter a valid available time.");
+          return;
+        }
+
+        // Make a POST request to the Flask backend
+        const response = await fetch("/prioritize", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `participant=${participant}&time=${time}`,
+        });
+
+        // Parse and display results
+        const tasks = await response.json();
+        const resultDiv = document.getElementById("results");
+        resultDiv.innerHTML = "<h3>Prioritized Tasks:</h3>";
+
+        if (tasks.length === 0) {
+          resultDiv.innerHTML +=
+            "<p>No tasks fit within the available time.</p>";
+          return;
+        }
+
+        tasks.forEach((task) => {
+          resultDiv.innerHTML += `
+                    <div class="task">
+                        <p><strong>Task Name:</strong> ${task.name}</p>
+                        <p><strong>Value:</strong> ${task.value}</p>
+                        <p><strong>Duration:</strong> ${task.duration} hours</p>
+                        <p><strong>Dependencies:</strong> ${
+                          task.dependencies.join(", ") || "None"
+                        }</p>
+                        <p><strong>Mandatory:</strong> ${
+                          task.mandatory ? "Yes" : "No"
+                        }</p>
+                        <p><strong>Fractionable:</strong> ${
+                          task.fractionable ? "Yes" : "No"
+                        }</p>
+                    </div>
+                    <hr>
+                `;
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>Task Prioritization System</h1>
+    </header>
+    <main>
+      <div class="form-container">
+        <label for="participant">Select Participant:</label>
+        <select id="participant">
+          <!-- Dynamically add options based on task lists -->
+          <option value="0">Participant 1</option>
+          <option value="1">Participant 2</option>
+          <option value="2">Participant 3</option>
+          <option value="3">Participant 4</option>
+          <option value="4">Participant 5</option>
+          <option value="5">Participant 6</option>
+          <option value="6">Participant 7</option>
+          <option value="7">Participant 8</option>
+          <option value="8">Participant 9</option>
+          <option value="9">Participant 10</option>
+          <option value="10">Participant 11</option>
+          <option value="11">Participant 12</option>
+        </select>
+        <br /><br />
+        <label for="time">Available Time (hours):</label>
+        <input
+          type="number"
+          id="time"
+          min="1"
+          placeholder="Enter available time" />
+        <br /><br />
+        <button onclick="prioritizeTasks()">Prioritize Tasks</button>
+      </div>
+      <div id="results" class="results-container">
+        <!-- Results will be displayed here -->
+      </div>
+    </main>
+  </body>
+</html>
